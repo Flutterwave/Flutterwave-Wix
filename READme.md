@@ -10,3 +10,8 @@ https://dev.wix.com/docs/develop-websites/articles/getting-started/about-velo-by
 
 
 https://dev.wix.com/docs/develop-websites/articles/coding-with-velo/integrations/custom-extensions-spis/custom-app-extensions-using-spis
+
+https://www.wix.com/velo/reference/spis/wix-payments/payment-provider
+
+
+https://dev.wix.com/docs/develop-websites/articles/code-tutorials/wix-pay/tutorial-payment-provider-custom-extension

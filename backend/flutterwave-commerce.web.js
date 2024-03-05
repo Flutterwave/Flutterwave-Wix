@@ -2,25 +2,31 @@ import {Permissions, webMethod} from 'wix-web-module';
 import { getSecret } from "wix-secrets-backend";
 import { fetch } from "wix-fetch";
 
+//credentials, order, tx_ref, returnUrls.
 
-export const submitPayment = webMethod(
+export const makePayment = webMethod(
   Permissions.Anyone, 
-  async (amount, currency, email, full_name ) => {
-    const secret_key = await getSecret("FLUTTERWAVE_SECRET_KEY");
-    const public_key =  await getSecret("FLUTTERWAVE_PUBLIC_KEY")
-
-    const tx_ref = "WIX_" +  Math.random() + "-TX";
-    const order_id = "200";
-    const phone = "+2349067985861";
-
+  async (credentia1s, order, tx_ref, returnLinks ) => {
     // initiate a payment via Flutterwave Standard.
-    return await getPaymentLink( {  amount, currency, email, full_name, tx_ref, order_id, phone });
+    const secret_key = credentials.secret_key;
+
+    //store return links in a collection to be used by custom redirect url and pass the custom redirect url.
+    //returnLinks
+
+    const success_redirect = returnLinks.successUrl;
+
+    return await getPaymentLink( {  secret_key , order, tx_ref, success_redirect });
 
 });
 
 export async function getPaymentLink( data ) {
-    const { amount, currency, email, full_name, tx_ref, order_id, phone } = data;
-    const secret_key = await getSecret("FLUTTERWAVE_SECRET_KEY");
+    const { secret_key , order, tx_ref, success_redirect } = data;
+    const amount = order.description.totalAmount;
+    const currency = order.description.currency;
+    const order_id = order.description._id;
+    const phone = order.description.billingAddress.phone;
+    const full_name = order.description.billingAddress.firstName + " " + order.description.billingAddress.lastName;
+    const email = order.description.billingAddress.email;
     const store_name = "FLW WIX TEST STORE";
     const store_logo = "https://ps.w.org/rave-woocommerce-payment-gateway/assets/icon-256%C3%97256.png";
 
@@ -29,8 +35,11 @@ export async function getPaymentLink( data ) {
         tx_ref,
         amount,
         currency,
-        meta: {order_id},
-        redirect_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
+        meta: {
+          order_id,
+          ip_address: order.fraudInformation.remoteIp
+        },
+        redirect_url: success_redirect,
         customer: {
             email,
             phonenumber: phone,
