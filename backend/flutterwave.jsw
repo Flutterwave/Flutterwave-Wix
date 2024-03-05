@@ -1,0 +1,42 @@
+// Jsw fille extension id depricated.
+
+
+import Fluttterwave from "flutterwave-node-v3";
+import { getSecret } from "wix-secrets-backend";
+import { fetch } from "wix-fetch";
+
+export async function submitPayment(amount, currency, email, full_name ) {
+    const secret_key = await getSecret("FLUTTERWAVE_SECRET_KEY");
+    const public_key =  await getSecret("FLUTTERWAVE_PUBLIC_KEY")
+
+    const flw = new Flutterwave(public_key, secret_key);
+
+    // initiate a payment via Flutterwave Standard.
+    const payLink = await getPaymentLink();
+
+}
+
+export async function getPaymentLink( data ) {
+    const { amount, currency, email, full_name, tx_ref, order_id, phone } = data;
+
+    //prepare payload.
+    let payload = {
+        tx_ref,
+        amount,
+        currency,
+        meta: {order_id},
+        customer: {
+            email,
+            phonenumber: phone,
+            name: full_name
+        },
+        customizations: {
+            title: getSecret("STORE_NAME"),
+            logo: getSecret("STORE_LOGO")
+        }
+    }
+
+    //add redirect url.
+    const response = await fetch()
+
+}
